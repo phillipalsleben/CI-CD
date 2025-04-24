@@ -35,4 +35,4 @@ jobs:
 
       - name: Restart PM2
         run: |
-          ssh ${{ secrets.TEST_USER }}@${{ secrets.TEST_HOST }} "cd ${{ secrets.TEST_REMOTE_PATH }} && pm2 restart app"
+          ssh ${{ secrets.TEST_USER }}@${{ secrets.TEST_HOST }} "cd ${{ secrets.TEST_REMOTE_PATH }} && pm2 restart mini_node_reports_server"
