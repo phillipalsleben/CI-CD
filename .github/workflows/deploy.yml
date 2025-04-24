@@ -13,7 +13,7 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Install deps & build
+      - name: Install dependencies & build
         run: |
           npm ci
           npm run build
@@ -28,11 +28,16 @@ jobs:
           mkdir -p ~/.ssh
           ssh-keyscan -H ${{ secrets.TEST_HOST }} >> ~/.ssh/known_hosts
 
-
-      - name: Copy files to server
+      - name: Copy dist and package files to server
         run: |
+          ssh ${{ secrets.TEST_USER }}@${{ secrets.TEST_HOST }} "mkdir -p ${{ secrets.TEST_REMOTE_PATH }}"
           scp -r ./dist ${{ secrets.TEST_USER }}@${{ secrets.TEST_HOST }}:${{ secrets.TEST_REMOTE_PATH }}
+          scp ./package.json ./package-lock.json ${{ secrets.TEST_USER }}@${{ secrets.TEST_HOST }}:${{ secrets.TEST_REMOTE_PATH }}
+
+      - name: Install production dependencies on server
+        run: |
+          ssh ${{ secrets.TEST_USER }}@${{ secrets.TEST_HOST }} "cd ${{ secrets.TEST_REMOTE_PATH }} && npm install --production"
 
       - name: Restart PM2
         run: |
-          ssh ${{ secrets.TEST_USER }}@${{ secrets.TEST_HOST }} "cd ${{ secrets.TEST_REMOTE_PATH }} && pm2 restart mini_node_reports_server"
+          ssh ${{ secrets.TEST_USER }}@${{ secrets.TEST_HOST }} "cd ${{ secrets.TEST_REMOTE_PATH }} && pm2 restart mini_node_reports_server || pm2 start dist/server.js --name mini_node_reports_server"
