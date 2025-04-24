@@ -31,7 +31,7 @@ jobs:
 
       - name: Copy files to server
         run: |
-          scp -r ./dist sudo_user@$78.47.189.7:/home/sudo_user/development/mini_node_reports_server/
+          scp -r ./dist ${{ secrets.TEST_USER }}@${{ secrets.TEST_HOST }}:${{ secrets.TEST_REMOTE_PATH }}
 
       - name: Restart PM2
         run: |
