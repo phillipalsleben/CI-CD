@@ -1,0 +1,31 @@
+name: Deploy to Server
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Install deps & build
+        run: |
+          npm ci
+          npm run build
+
+      - name: Copy files to server
+        run: |
+          scp -r ./dist ${{ secrets.TEST_USER }}@${{ secrets.TEST_HOST }}:${{ secrets.TEST_REMOTE_PATH }}
+        env:
+          SSH_PRIVATE_KEY: ${{ secrets.TEST_SSH_PRIVATE_KEY }}
+
+      - name: Restart PM2
+        run: |
+          ssh ${{ secrets.TEST_USER }}@${{ secrets.TEST_HOST }} "cd ${{ secrets.TEST_REMOTE_PATH }} && pm2 restart app"
+        env:
+          SSH_PRIVATE_KEY: ${{ secrets.TEST_SSH_PRIVATE_KEY }}
