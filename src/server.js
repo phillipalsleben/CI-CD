@@ -46,7 +46,7 @@ apiV1.post('/encryptedcard', (req, res) => {
 
 
 app.listen(port, () => {
-    console.log(`Server running on ...  http://localhost:${port}/v1/savereport`);
+    console.log(`Server running on ...  http://localhost:${port}/v1/savereport :)`);
 });
 
 
